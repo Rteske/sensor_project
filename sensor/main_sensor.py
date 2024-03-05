@@ -166,7 +166,9 @@ class Sensor:
             for index, x_value in enumerate(x_peaks):
                 peaks.append([x_value, y_peaks[index]])
 
-        return peaks, [max_peak_x, max_peak_y]
+            return peaks, [max_peak_x, max_peak_y]
+        else:
+            return [], [0,0]
     
     def find_moving_average_peaks(self, x, y):
         window_size=5
@@ -205,7 +207,7 @@ class Sensor:
 
             return peaks, max_peak
         else:
-            return [], []
+            return [], [0,0]
 
     def find_threshold_peaks(self, x, y):
         # For loop only iterating through x values and providing an index to match call out y values
@@ -228,10 +230,8 @@ class Sensor:
 
             return peaks, [max_peak_x, max_peak_y]
         else:
-            peaks = []
-            main = [0,0]
 
-            return peaks, main
+            return [], [0,0]
             
 
     # Main function

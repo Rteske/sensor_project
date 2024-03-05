@@ -38,8 +38,7 @@ class Sensor:
         print("Enter Num and Hit enter")
         print("1. Basic Limit and Max Peaks")
         print("2. Spline Interpolated Peaks <Works the best>")
-        print("3. Moving Average Peaks")
-        selection = input(">")
+        selection = input("> ")
         self.peak_detection_type = int(selection) - 1
 
     def read_data(self):

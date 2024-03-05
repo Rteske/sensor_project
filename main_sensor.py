@@ -19,6 +19,7 @@ class Sensor:
         # Switch this back for Mac
         # Open serial port
         # port = '/dev/cu.usbmodem306F345C31331'
+        port = "COM3"
 
         # This is how many data points are on your plot at one time
         self.num_plot_data = 300
@@ -32,7 +33,6 @@ class Sensor:
         self.data_filepath = dir_name + "\data" + f"\{date_string}" + ".csv"
         self.write2file(["Distance(Meters)","Amplitude"])
 
-        port = "COM3"
         self.ser = serial.Serial(port, 115200)
         print("What type of peak detection would you like to use?")
         print("Enter Num and Hit enter")
@@ -209,7 +209,7 @@ class Sensor:
         else:
             return [], []
 
-    def limit_max_peak_detection(self, x, y):
+    def find_threshold_peaks(self, x, y):
         # For loop only iterating through x values and providing an index to match call out y values
         # X values that are within limit
         x_ = np.array(x)
@@ -261,12 +261,10 @@ class Sensor:
 
                         if self.peak_detection_type == 0:
                             x, y = self.savgol_smoothing(x, y)
-                            peaks, main = self.limit_max_peak_detection(x, y) 
+                            peaks, main = self.find_threshold_peaks(x, y) 
                         elif self.peak_detection_type == 1:   
                             x, y = self.savgol_smoothing(x, y)
                             peaks, main = self.find_spline_peaks(x, y)
-                        elif self.peak_detection_type == 2:
-                            peaks, main = self.find_moving_average_peaks(x, y)
 
                         for peak in peaks:
                             self.write2file(peak)
@@ -283,13 +281,6 @@ class Sensor:
                         x.append(_x)
                         y.append(_y)
                         counter = counter + 1
-                    else:
-                        # Got rid of the reported distances so that i could determine peaks instead of the data feed
-                        # if data[0][2:21] == 'detected distances:':
-                        print(data)
-                        # peak = float(data[0][22:26])
-                        # print(type(peak))
-
 
         # Close serial port
         self.ser.close()

@@ -1,6 +1,5 @@
 import serial
 import matplotlib.pyplot as plt
-from matplotlib.widgets import Button
 from threading import Thread
 from queue import Queue
 import time
@@ -253,20 +252,19 @@ class Sensor:
             data = self.read_data()
             if (data != ''):
                 # if the microprocesser determines a distance then the try loop goes into exception and plots the results
-                if counter > self.num_plot_data:
+                if counter >= self.num_plot_data:
                     if (x != [] and y != []):
                         # sort both x and y according to x
                         x, y = zip(*sorted(zip(x, y)))
 
                         if self.peak_detection_type == 0:
                             x, y = self.savgol_smoothing(x, y)
-                            peaks, main = self.find_threshold_peaks(x, y) 
+                            peaks, main = self.find_threshold_peaks(x, y)
+                            self.write2file(main)
                         elif self.peak_detection_type == 1:   
                             x, y = self.savgol_smoothing(x, y)
                             peaks, main = self.find_spline_peaks(x, y)
-
-                        for peak in peaks:
-                            self.write2file(peak)
+                            self.write2file(main)
 
                         self.init_plot(x, y, peaks, main)
                         # Reset locals

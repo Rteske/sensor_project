@@ -18,7 +18,7 @@ class Sensor:
         # Switch this back for Mac
         # Open serial port
         # port = '/dev/cu.usbmodem306F345C31331'
-        port = "COM3"
+        port = "COM5"
 
         # This is how many data points are on your plot at one time
         self.num_plot_data = 300
@@ -56,8 +56,8 @@ class Sensor:
         plt.ylabel('Amplitude')
         plt.title('Distance vs Amplitude')
         # set axis limits
-        plt.xlim(0, main[0] + 0.5)
-        plt.ylim(0, main[1] + 100)
+        plt.xlim(0, 2.4)
+        plt.ylim(0, 4000)
         # if there are no peaks dont bother 
         if len(peaks) > 0:
             # this is if you want to see where all are crossing the limit threshold
@@ -82,7 +82,7 @@ class Sensor:
 
 
     def write2file(self, array):
-        with open(self.data_filepath, 'a', encoding="utf-8") as ff:
+        with open(self.data_filepath, 'a', encoding="utf-8", newline='') as ff:
             writer = csv.writer(ff)
             writer.writerow(array)
 
@@ -162,11 +162,17 @@ class Sensor:
             x_peaks = x_peaks[within_limit]
             y_peaks = y_peaks[within_limit]
 
-            peaks = []
-            for index, x_value in enumerate(x_peaks):
-                peaks.append([x_value, y_peaks[index]])
+            if len(y_peaks) > 0:
+                max_peak_y = np.max(y_peaks)
+                max_peak_x = x_peaks[np.argmax(max_peak_y)]
 
-            return peaks, [max_peak_x, max_peak_y]
+                peaks = []
+                for index, x_value in enumerate(x_peaks):
+                    peaks.append([x_value, y_peaks[index]])
+
+                return peaks, [max_peak_x, max_peak_y]
+            else:
+                return [], [0,0]
         else:
             return [], [0,0]
     
@@ -236,7 +242,6 @@ class Sensor:
 
     # Main function
     def main(self):
-
         # Setting local variables for assignment
         peaks=[]
         counter = 0
@@ -270,14 +275,16 @@ class Sensor:
                         # Reset locals
                         x = []
                         y = []
-                    counter = 0
+                        counter = 0
                 else:
+                    print(data)
                     if len(data[0]) < 10:
                         _x = float(data[0])
                         _y = float(data[1])
                         x.append(_x)
                         y.append(_y)
                         counter = counter + 1
+
 
         # Close serial port
         self.ser.close()
